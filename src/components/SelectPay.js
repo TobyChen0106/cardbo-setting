@@ -65,45 +65,45 @@ class MainInfo extends Component {
     hadleSelectPay = (e, i) => {
         e.preventDefault();
         const index = this.state.selectedPays.findIndex(f => f === i);
-        
         if (index === -1) {
             this.setState(pre => {
                 return { selectedPays: [i, ...pre.selectedPays] }
             })
-            console.log(index)
         } else {
-            const this.state.selectedPays.splice(index, 1)
-            this.setState( { selectedPays: pre.selectedPays.splice(index, 1) })
-            console.log(index)
+            var new_selectedPays = this.state.selectedPays
+            new_selectedPays.splice(index, 1)
+            this.setState({ selectedPays: new_selectedPays })
         }
-        console.log(this.state.selectedPays)
     }
     render() {
         const { classes } = this.props;
-
         const list = this.props.pay_list.map((i, index) => {
-            const selected = this.state.selectedPays.findIndex(f => f === index) === -1 ? null:
-                (<ListItemSecondaryAction>
-                    <IconButton edge="end" aria-label="comments" component={Link} to="/card">
-                        <KeyboardArrowRightIcon />
-                    </IconButton>
-                </ListItemSecondaryAction>);
-            // console.log(this.state.selectedPays)
+            const selected = this.state.selectedPays.findIndex(f => f === index) === -1 ? null :
+                (
+                    <ListItemSecondaryAction>
+                        <IconButton edge="end" aria-label="comments">
+                            <KeyboardArrowRightIcon />
+                        </IconButton>
+                        123456
+                    </ListItemSecondaryAction>
+                );
+            const selectedOpacity = this.state.selectedPays.findIndex(f => f === index) === -1 ? null : { opacity: 0.5 }
             return (
                 <>
                     <ListItem onClick={(e) => this.hadleSelectPay(e, index)}>
                         <ListItemIcon>
-                            <Avatar className={classes.avatar} alt="Pay" src={i.payImage} />
+                            <Avatar className={classes.avatar} alt="Pay" src={i.payImage} style={selectedOpacity} />
                         </ListItemIcon>
                         <ListItemText id={`setting-cards`}
                             primary={i.payName}
                             secondary={null} />
-                        {selected}
+                        {/* {selected} */}
                     </ListItem>
                     <Divider />
                 </>
             )
         })
+
         return (
             <List subheader={<ListSubheader>綁定行動支付</ListSubheader>} className={classes.root}>
                 <Divider />
