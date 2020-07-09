@@ -8,21 +8,30 @@ const card_id_list = [...Array(20).keys()];
 
 export const card_list = bank_list.map((bankName, index) => (
     {
-        bankName:bankName,
-        bankTitle:'bankTitle',
-        bankSubtitle:'bankSubtitle',
+        bankName: bankName,
+        bankTitle: 'bankTitle',
+        bankSubtitle: 'bankSubtitle',
         bankCards:
             card_id_list.map((cardName, index) => (
                 {
-                    cardName:`${bankName}-card-${cardName}`,
+                    cardName: `${bankName}-card-${cardName}`,
                     cardId: short.generate(),
-                    imageSrc:'images/cards/card-01.jpg'
+                    imageSrc: 'images/cards/card-01.jpg'
                 }
             ))
     }
 ));
 
+const pay_id_list = [...Array(13).keys()];
 
+export const pay_list = pay_id_list.map((i, index) => (
+    {
+        payID: short.generate(),
+        payName: "Line Pay",
+        payImage:'images/pays/autopass-logo.png',
+        offers: ["offer1", "offer2"],
+    }
+));
 // for(var i=0 ; i<card_list.length ; ++i){
 //     console.log(card_list[i]);
 // }

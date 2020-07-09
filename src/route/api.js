@@ -76,4 +76,17 @@ router.get('/cards', (req, res) => {
     })
 });
 
+router.get('/get-users', (req, res) => {
+    User.find({}, (err, data) => {
+        if (err) {
+            console.log(err);
+        }
+        else if (!data) {
+            console.log("[ERROR] EMPTY DATA!");
+        } else {
+            res.json(data);
+        }
+    })
+});
+
 module.exports = router;

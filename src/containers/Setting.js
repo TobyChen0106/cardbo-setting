@@ -3,17 +3,20 @@ import React, { Component, useHistory } from 'react';
 //images
 import autopass_image from '../images/autopass-logo.png';
 import tick_image from '../images/tick.png';
-
+import { withStyles } from '@material-ui/core/styles';
 import ReactLoading from 'react-loading';
 
 // components
 import SelectList from '../components/SelectList';
 import AppTitle from '../components/AppTitle';
 import MainInfo from '../components/MainInfo';
+import SelectPay from '../components/SelectPay';
+import SelectTriple from '../components/SelectTriple';
+import SetSimpleInfo from '../components/SetSimpleInfo';
 import SaveFooter from '../components/SaveFooter';
 
 //DB
-import { bank_list, card_list } from './db_for_cards';
+import { bank_list, card_list, pay_list } from './db_for_cards';
 
 import { BrowserRouter, HashRouter, Route } from "react-router-dom";
 import Switch from 'react-router-transition-switch';
@@ -23,18 +26,20 @@ import Divider from '@material-ui/core/Divider';
 // Liff
 const liff = window.liff;
 
-class App extends Component {
+const useStyles = (theme) => ({
+    root: {
+        width: "100vw",
+        minHeight: "100vh",
+    },
+
+});
+
+class Setting extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            // profile: undefined,
-            profile: {
-                displayName: "Toby",
-                userId: "1234"
-            },
             OS: undefined,
-
-            userCards: [],
+            user: undefined,
             cards: [{
                 bank: '',
                 card: '',
@@ -46,6 +51,7 @@ class App extends Component {
 
             bank_list: [],
             card_list: [],
+            pay_list: [],
             loading: true,
 
             select_card_height: 550 * 0.33,
@@ -59,11 +65,41 @@ class App extends Component {
     }
 
     componentDidMount() {
-        this.handleResizeWindow();
+        console.log(this.props.location)
+
+        // const params = new URLSearchParams(this.props.location.search);
+        // const id = params.get('id');
+        // console.log(id)
+        const profile = {
+            userId: "123456",
+            displayName: "Toby",
+            userImage: 'https://react.semantic-ui.com/images/avatar/small/joe.jpg'
+        }
+        const user = {
+            lineID: profile.userId,
+            displayName: profile.displayName,
+            userImage: profile.userImage,
+            phone: undefined,
+            email: undefined,
+            city: undefined,
+            favos: ["offer1", "offer2"],
+            ownCards: ["card1", "card2"],
+            ownPays: ["pay1", "pay2"],
+
+            triple: undefined,
+            tripleCard: undefined,
+        }
 
         this.setState({
+            user: user,
+        });
+
+
+        this.handleResizeWindow();
+        this.setState({
             bank_list: bank_list,
-            card_list: card_list
+            card_list: card_list,
+            pay_list: pay_list,
         });
 
         this.setState({ loading: false });
@@ -87,8 +123,8 @@ class App extends Component {
         } else {
             this.setState({ select_card_list_width: window.innerHeight * 0.8 });
         }
-        // console.log( window.innerWidth, window.innerHeight);
     }
+
     formOnSubmit = () => {
         // if (this.state.age === 0) {
         //     window.alert('請輸入年齡!');
@@ -138,9 +174,33 @@ class App extends Component {
 
     handleBack = () => {
         // this.history.push("/");
+
+    }
+    updateInfo = (info) => {
+        switch (info.type) {
+            case "phone":
+                this.setState(pre => {
+                    pre.user.phone = info.data;
+                    return { user: pre.user }
+                });
+                break;
+            case "email":
+                this.setState(pre => {
+                    pre.user.email = info.data;
+                    return { user: pre.user }
+                });
+                break;
+            case "city":
+                this.setState(pre => {
+                    pre.user.city = info.data;
+                    return { user: pre.user }
+                });
+                break;
+        }
     }
 
     render() {
+        const { classes } = this.props;
         if (this.state.loading) {
             // if (true) {
             return (
@@ -151,16 +211,20 @@ class App extends Component {
         else {
             return (
                 <div className="">
-                    <AppTitle
-                        logo={autopass_image}
-                        title={`卡伯會員設定`}
-                        subtitle={`${this.state.profile.displayName}，您可以在這裡選擇您擁有的卡片:`}
-                    // handleBack={this.handleBack}
-                    />
-                    {/* <Switch> */}
+                    <AppTitle handleBack={this.handleBack} />
                     <Switch component={Fader}>
                         <Route exact={true} path="/" >
-                            <MainInfo num_cards={3} />
+                            <MainInfo
+                                userPhone={this.state.user.phone}
+                                userEmail={this.state.user.email}
+                                userCity={this.state.user.city}
+                                num_cards={this.state.user.ownCards.length}
+                                num_pays={this.state.user.ownPays.length}
+                                triple={this.state.user.triple}
+                                tripleCard={this.state.user.tripleCard}
+                                displayName={this.state.user.displayName}
+                                userAvatar={this.state.user.userImage}
+                            />
                         </Route>
                         <Route path="/card" >
                             <SelectList
@@ -172,11 +236,27 @@ class App extends Component {
                                 tick={tick_image}
                             />
                         </Route>
+                        <Route path="/pay"
+                            render={(props) => (
+                                <SelectPay
+                                    {...props}
+                                    ownPays={this.state.user.ownPays}
+                                    pay_list={this.state.pay_list} />
+                            )} />
+                        <Route path="/triple" >
+                            <SelectTriple
+                                triple={this.state.user.triple}
+                                tripleCard={this.state.user.tripleCard}
+                            />
+                        </Route>
+                        <Route path="/info"
+                            render={(props) => (
+                                <SetSimpleInfo {...props} updateInfo={this.updateInfo} />
+                            )} />
                     </Switch>
-                    {/* </Switch> */}
-                </div>
+                </div >
             );
         }
     }
 }
-export default App;
+export default withStyles(useStyles)(Setting);

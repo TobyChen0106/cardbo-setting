@@ -63,7 +63,7 @@ class AppTitle extends Component {
                     <div className={classes.buttonGroup}>
                         <Button size="large" style={{ color: "#fff", width: "25vw" }} onClick={this.props.handleBack} component={Link} to="/">返回</Button>
                         <Button size="large" style={{ color: "#fff", width: "50vw", fontSize: "1.2rem" }}>卡伯設定</Button>
-                        <Button size="large" style={{ color: "#fff", width: "25vw" }}>確定</Button>
+                        <Button size="large" style={{ color: "#fff", width: "25vw", visibility:"hidden"}}>確定</Button>
                     </div>
                     {/* <div className={classes.buttonGroupSpacer}>123</div> */}
                 </div>

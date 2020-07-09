@@ -37,6 +37,7 @@ class SelectList extends Component {
     }
     handleSelectBank = (e, bankName, index) => {
         // console.log(bankName);
+        // e.preventDefault();
         if (index === this.state.enable_select_index) {
             this.setState({ enable_select_index: -1 });
         } else {

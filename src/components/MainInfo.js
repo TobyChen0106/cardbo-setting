@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { withStyles, makeStyles } from '@material-ui/core/styles';
-import { Link} from "react-router-dom";
+import { Link } from "react-router-dom";
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
@@ -32,6 +32,8 @@ const useStyles = (theme) => ({
         paddingTop: "1rem",
         paddingBottom: "3rem",
         display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
         justifyContent: "center",
         background: "rgb(37,151,226)",
         background: "linear-gradient(0deg, rgba(37,151,226,1) 0%, rgba(53,152,218,1) 10%, rgba(9,122,197,1) 49%, rgba(9,122,197,1) 100%)",
@@ -39,6 +41,11 @@ const useStyles = (theme) => ({
     avatar: {
         width: theme.spacing(12),
         height: theme.spacing(12),
+    },
+    displayName: {
+        color: "#fff",
+        fontSize: "1.2rem",
+        marginTop: "0.5rem"
     },
     customBadge: {
         backgroundColor: "#2fc4b2",
@@ -57,7 +64,10 @@ class MainInfo extends Component {
         return (
             <>
                 <div className={classes.avatarHolder}>
-                    <Avatar alt="Cardbo User" src={this.props.userAvatar} className={classes.avatar} />
+                    <Avatar alt="User Avatar" src={this.props.userAvatar} className={classes.avatar} />
+                    <div className={classes.displayName}>
+                        {this.props.displayName}
+                    </div>
                 </div>
                 <List subheader={<ListSubheader>支付工具</ListSubheader>} className={classes.root}>
                     <Divider />
@@ -74,7 +84,9 @@ class MainInfo extends Component {
                             </Badge>
 
                         </ListItemIcon>
-                        <ListItemText id={`setting-cards`} primary={`常用信用卡設定`} secondary={`未設定`} />
+                        <ListItemText id={`setting-cards`}
+                            primary={`常用信用卡設定`}
+                            secondary={this.props.num_cards ? `${this.props.num_cards} 張信用卡` : `未設定`} F />
                         <ListItemSecondaryAction>
                             <IconButton edge="end" aria-label="comments" component={Link} to="/card">
                                 <KeyboardArrowRightIcon />
@@ -89,13 +101,15 @@ class MainInfo extends Component {
                                     horizontal: 'right',
                                 }}
                                 color="secondary"
-                                badgeContent={this.props.num_cards}>
+                                badgeContent={this.props.num_pays}>
                                 <PhonelinkRingIcon />
                             </Badge>
                         </ListItemIcon>
-                        <ListItemText id={`setting-pay`} primary={`常用行動支付設定`} secondary={`未設定`} />
+                        <ListItemText id={`setting-pay`}
+                            primary={`常用行動支付設定`}
+                            secondary={this.props.num_pays ? `${this.props.num_pays} 種行動支付` : `未設定`} />
                         <ListItemSecondaryAction>
-                            <IconButton edge="end" aria-label="comments" >
+                            <IconButton edge="end" aria-label="comments" component={Link} to="/pay">
                                 <KeyboardArrowRightIcon />
                             </IconButton>
                         </ListItemSecondaryAction>
@@ -109,13 +123,14 @@ class MainInfo extends Component {
                                     horizontal: 'right',
                                 }}
                                 color="secondary"
-                                badgeContent={<DoneIcon style={{ fontSize: 10 }}/>}>
+                                badgeContent={this.props.triple ? <DoneIcon style={{ fontSize: 10 }} /> : null}>
                                 <PhonelinkRingIcon />
                             </Badge>
                         </ListItemIcon>
-                        <ListItemText id={`setting-pay`} primary={`三倍券綁定`} secondary={`未設定`} />
+                        <ListItemText id={`setting-pay`} primary={`三倍券綁定`}
+                            secondary={this.props.triple ? `已設定` : `未設定`} />
                         <ListItemSecondaryAction>
-                            <IconButton edge="end" aria-label="comments" >
+                            <IconButton edge="end" aria-label="comments" component={Link} to="/tripple">
                                 <KeyboardArrowRightIcon />
                             </IconButton>
                         </ListItemSecondaryAction>
@@ -124,33 +139,65 @@ class MainInfo extends Component {
                 <List subheader={<ListSubheader>個人資訊</ListSubheader>} className={classes.root}>
                     <ListItem>
                         <ListItemIcon>
-                            <PhoneIcon />
+                            <Badge
+                                classes={{ badge: classes.customBadge }}
+                                anchorOrigin={{
+                                    vertical: 'bottom',
+                                    horizontal: 'right',
+                                }}
+                                color="secondary"
+                                badgeContent={this.props.userPhone ? <DoneIcon style={{ fontSize: 10 }} /> : null}>
+                                <PhoneIcon />
+                            </Badge>
                         </ListItemIcon>
-                        <ListItemText id="switch-list-label-bluetooth" primary={`手機`} secondary={`未設定`} />
+                        <ListItemText primary={`手機`}
+                            secondary={this.props.userPhone ? this.props.userPhone : `未設定`} />
                         <ListItemSecondaryAction>
-                            <IconButton edge="end" aria-label="comments" >
+                            <IconButton edge="end" aria-label="comments" component={Link} to="/info?type=phone" >
                                 <KeyboardArrowRightIcon />
                             </IconButton>
                         </ListItemSecondaryAction>
                     </ListItem>
                     <ListItem>
                         <ListItemIcon>
-                            <MailIcon />
+                            <Badge
+                                classes={{ badge: classes.customBadge }}
+                                anchorOrigin={{
+                                    vertical: 'bottom',
+                                    horizontal: 'right',
+                                }}
+                                color="secondary"
+                                badgeContent={this.props.userEmail ? <DoneIcon style={{ fontSize: 10 }} /> : null}>
+                                <MailIcon />
+                            </Badge>
+
                         </ListItemIcon>
-                        <ListItemText id="switch-list-label-bluetooth" primary={`Emai`} secondary={`未設定`} />
+                        <ListItemText primary={`Emai`}
+                            secondary={this.props.userEmail ? this.props.userEmail : `未設定`} />
                         <ListItemSecondaryAction>
-                            <IconButton edge="end" aria-label="comments" >
+                            <IconButton edge="end" aria-label="comments" component={Link} to="/info?type=email">
                                 <KeyboardArrowRightIcon />
                             </IconButton>
                         </ListItemSecondaryAction>
                     </ListItem>
                     <ListItem>
                         <ListItemIcon>
-                            <LocationOnIcon />
+                            <Badge
+                                classes={{ badge: classes.customBadge }}
+                                anchorOrigin={{
+                                    vertical: 'bottom',
+                                    horizontal: 'right',
+                                }}
+                                color="secondary"
+                                badgeContent={this.props.userCity ? <DoneIcon style={{ fontSize: 10 }} /> : null}>
+                                <LocationOnIcon />
+                            </Badge>
                         </ListItemIcon>
-                        <ListItemText id="switch-list-label-bluetooth" primary={`城市`} secondary={`未設定`} />
+                        <ListItemText id="switch-list-label-bluetooth"
+                            primary={`城市`}
+                            secondary={this.props.userCity ? this.props.userCity : `未設定`} />
                         <ListItemSecondaryAction>
-                            <IconButton edge="end" aria-label="comments" >
+                            <IconButton edge="end" aria-label="comments" component={Link} to="/info?type=city">
                                 <KeyboardArrowRightIcon />
                             </IconButton>
                         </ListItemSecondaryAction>
@@ -161,7 +208,7 @@ class MainInfo extends Component {
                         <ListItemIcon>
                             <ColorLensIcon />
                         </ListItemIcon>
-                        <ListItemText id="switch-list-label-bluetooth" primary={`暗色主題 (研發中)`} style={{ color: "#ccc" }} />
+                        <ListItemText id="switch-list-label-bluetooth" primary={`暗色主題 (開發中)`} style={{ color: "#ccc" }} />
                         <ListItemSecondaryAction>
                             <Switch
                                 disabled
