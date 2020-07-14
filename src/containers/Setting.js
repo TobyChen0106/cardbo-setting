@@ -7,16 +7,17 @@ import { withStyles } from '@material-ui/core/styles';
 import ReactLoading from 'react-loading';
 
 // components
-import SelectList from '../components/SelectList';
+
 import AppTitle from '../components/AppTitle';
 import MainInfo from '../components/MainInfo';
+import SelectCard from '../components/SelectCard';
 import SelectPay from '../components/SelectPay';
 import SelectTriple from '../components/SelectTriple';
 import SetSimpleInfo from '../components/SetSimpleInfo';
-import SaveFooter from '../components/SaveFooter';
+import UserCards from '../components/UserCards';
 
 //DB
-import { bank_list, card_list, pay_list } from './db_for_cards';
+import { banks, cards, pays } from './db_for_cards';
 
 import { BrowserRouter, HashRouter, Route } from "react-router-dom";
 import Switch from 'react-router-transition-switch';
@@ -67,9 +68,6 @@ class Setting extends Component {
     componentDidMount() {
         console.log(this.props.location)
 
-        // const params = new URLSearchParams(this.props.location.search);
-        // const id = params.get('id');
-        // console.log(id)
         const profile = {
             userId: "123456",
             displayName: "Toby",
@@ -86,43 +84,19 @@ class Setting extends Component {
             ownCards: ["card1", "card2"],
             ownPays: ["pay1", "pay2"],
 
-            triple: undefined,
+            triple: "信用卡", //
             tripleCard: undefined,
         }
 
         this.setState({
             user: user,
         });
-
-
-        this.handleResizeWindow();
         this.setState({
-            bank_list: bank_list,
-            card_list: card_list,
-            pay_list: pay_list,
+            bank_list: banks,
+            card_list: cards,
+            pay_list: pays,
         });
-
         this.setState({ loading: false });
-
-        window.addEventListener('resize', this.handleResizeWindow);
-    }
-    handleResizeWindow = () => {
-        this.setState({ window_width: window.innerWidth, window_height: window.innerHeight });
-        if (window.innerWidth * 0.33 < 198) {
-            this.setState({ select_card_height: window.innerWidth * 0.33 });
-        } else {
-            this.setState({ select_card_height: 198 });
-        }
-        if (window.innerWidth * 0.6 < 306) {
-            this.setState({ select_card_width: window.innerWidth * 0.51 });
-        } else {
-            this.setState({ select_card_width: 306 });
-        }
-        if (window.innerWidth * 0.9 < window.innerHeight * 0.8) {
-            this.setState({ select_card_list_width: window.innerWidth * 0.9 });
-        } else {
-            this.setState({ select_card_list_width: window.innerHeight * 0.8 });
-        }
     }
 
     formOnSubmit = () => {
@@ -172,10 +146,6 @@ class Setting extends Component {
         // }
     }
 
-    handleBack = () => {
-        // this.history.push("/");
-
-    }
     updateInfo = (info) => {
         switch (info.type) {
             case "phone":
@@ -199,57 +169,115 @@ class Setting extends Component {
         }
     }
 
+    updateUserCards = (cardID) => {
+        if (this.state.user.ownCards.find(c => c === cardID)) {
+            var new_user = this.state.user;
+            new_user.ownCards = this.state.user.ownCards.filter(c => c !== cardID)
+            this.setState({
+                new_user: new_user
+            });
+        } else {
+            var new_user = this.state.user;
+            new_user.ownCards = [cardID, ...this.state.user.ownCards]
+            this.setState({
+                user: new_user
+            });
+        }
+    }
+
+    updateUserPays = (payID) => {
+        if (this.state.user.ownPays.find(c => c === payID)) {
+            var new_user = this.state.user;
+            new_user.ownPays = this.state.user.ownPays.filter(c => c !== payID)
+            this.setState({
+                new_user: new_user
+            });
+            console.log((new_user.ownPays))
+        } else {
+            var new_user = this.state.user;
+            new_user.ownPays = [payID, ...this.state.user.ownPays]
+            this.setState({
+                user: new_user
+            });
+            console.log((new_user.ownPays))
+        }
+    }
+
+    handleSetTriple = () => {
+        liff.sendMessages([
+            {
+                type: 'text',
+                text: '設定三倍券'
+            }
+        ]).catch((err) => {
+            console.log('error', err);
+        }).then(() => {
+            liff.closeWindow();
+        });
+    }
+
     render() {
         const { classes } = this.props;
         if (this.state.loading) {
-            // if (true) {
-            return (
-                <div className="my-loading">
-                    <ReactLoading type={'balls'} color={'#fff'} height={'20vh'} width={'20vw'} />
-                </div>)
+            return (<div className="my-loading">
+                <ReactLoading type={'balls'} color={'#fff'} height={'20vh'} width={'20vw'} />
+            </div>)
         }
         else {
             return (
-                <div className="">
-                    <AppTitle handleBack={this.handleBack} />
+                <div className={classes.root}>
+                    <AppTitle />
                     <Switch component={Fader}>
-                        <Route exact={true} path="/" >
-                            <MainInfo
-                                userPhone={this.state.user.phone}
-                                userEmail={this.state.user.email}
-                                userCity={this.state.user.city}
-                                num_cards={this.state.user.ownCards.length}
-                                num_pays={this.state.user.ownPays.length}
-                                triple={this.state.user.triple}
-                                tripleCard={this.state.user.tripleCard}
-                                displayName={this.state.user.displayName}
-                                userAvatar={this.state.user.userImage}
-                            />
-                        </Route>
-                        <Route path="/card" >
-                            <SelectList
-                                bank_list={this.state.bank_list}
-                                card_list={this.state.card_list}
-                                select_card_list_width={this.state.select_card_list_width}
-                                select_card_height={this.state.select_card_height}
-                                select_card_width={this.state.select_card_width}
-                                tick={tick_image}
-                            />
-                        </Route>
-                        <Route path="/pay"
+                        <Route exact={true} path="/"
+                            render={(props) => (
+                                <MainInfo
+                                    userPhone={this.state.user.phone}
+                                    userEmail={this.state.user.email}
+                                    userCity={this.state.user.city}
+                                    num_cards={this.state.user.ownCards.length}
+                                    num_pays={this.state.user.ownPays.length}
+                                    triple={this.state.user.triple}
+                                    tripleCard={this.state.user.tripleCard}
+                                    displayName={this.state.user.displayName}
+                                    userAvatar={this.state.user.userImage}
+                                    handleSetTriple={this.handleSetTriple}
+                                />
+                            )} />
+
+                        <Route exact={true} path="/card"
+                            render={(props) => (
+                                <UserCards
+                                    {...props}
+                                    updateUserCards={this.updateUserCards}
+                                    bank_list={this.state.bank_list}
+                                    card_list={this.state.card_list}
+                                    ownCards={this.state.user.ownCards} />
+                            )} />
+                        <Route exact={true} path="/card/select"
+                            render={(props) => (
+                                <SelectCard
+                                    {...props}
+                                    updateUserCards={this.updateUserCards}
+                                    bank_list={this.state.bank_list}
+                                    card_list={this.state.card_list}
+                                    ownCards={this.state.user.ownCards}
+                                    pay_list={this.state.pay_list} />
+                            )} />
+                        <Route exact={true} path="/pay"
                             render={(props) => (
                                 <SelectPay
                                     {...props}
+                                    updateUserPays={this.updateUserPays}
                                     ownPays={this.state.user.ownPays}
                                     pay_list={this.state.pay_list} />
                             )} />
-                        <Route path="/triple" >
+                        <Route exact={true} path="/triple" >
                             <SelectTriple
                                 triple={this.state.user.triple}
-                                tripleCard={this.state.user.tripleCard}
+                                tripleCardorPayID={this.state.user.tripleCard}
                             />
                         </Route>
-                        <Route path="/info"
+                        <Route exact={true} path="/info"
                             render={(props) => (
                                 <SetSimpleInfo {...props} updateInfo={this.updateInfo} />
                             )} />

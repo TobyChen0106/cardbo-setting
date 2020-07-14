@@ -34,11 +34,6 @@ import Menu from '@material-ui/core/Menu';
 import Button from '@material-ui/core/Button';
 
 import MenuItem from '@material-ui/core/MenuItem';
-import 實體券 from "../assets/small實體券.png";
-import 信用卡 from "../assets/small信用卡.png";
-import 電子票證 from "../assets/small電子票證.png";
-import 行動支付 from "../assets/small行動支付.png";
-
 const useStyles = (theme) => ({
     root: {
     },
@@ -64,66 +59,84 @@ class MainInfo extends Component {
     constructor(props) {
         super(props);
         this.state = {
-
+            openMore: null,
+            anchorEl: null
         }
     }
-
     componentDidMount = () => {
         window.scrollTo(0, 0)
     }
-
     handleClickMore = (e, index) => {
         this.setState({ openMore: index, anchorEl: e.currentTarget })
     }
-
     handleMoreClose = () => {
         this.setState({ openMore: null })
     }
 
     handleDeleteCard = (e, cardID) => {
+        console.log("delete")
         e.preventDefault()
         this.props.updateUserCards(cardID)
     }
-
     render() {
+        // if(this.props.ownCards.length === 0){
+        //     return <Redirect to='/card/select' />;
+        // }
         const { classes } = this.props;
-        const icon = () => {
-            switch (this.props.triple) {
-                case "實體券":
-                    return 實體券;
-                case "行動支付":
-                    return 行動支付;
-                case "信用卡":
-                    return 信用卡;
-                case "悠遊卡":
-                case "一卡通":
-                case "有錢卡":
-                case "愛金卡":
-                    return 電子票證;
-                default:
-                    return null;
-            }
-        }
-        const tripleInfo = (<ListItem>
-            <Card className={classes.root}>
-                <CardHeader
-                    avatar={
-                        <Avatar aria-label="Bank" className={classes.avatar} src={icon()}>
-                            ?
-                        </Avatar>
-                    }
-                    title={`123`}
-                    subheader={`123`}
-                />
-                <div className={classes.cardImageHolder}>
-                    <img className={classes.cardImage} src={``} />
-                </div>
-            </Card>
-        </ListItem>)
-
+        const list = this.props.ownCards.map((i, index) => {
+            const card = this.props.card_list.find(c => c.cardID === i);
+            const bank = this.props.bank_list.find(b => b.bankID === card.bankID);
+            return (
+                <ListItem>
+                    <Card className={classes.root}>
+                        <CardHeader
+                            avatar={
+                                <Avatar aria-label="Bank" className={classes.avatar} src={bank.bankImage}>
+                                    B
+                                </Avatar>
+                            }
+                            action={
+                                <div>
+                                    <IconButton aria-label="settings" onClick={(e) => this.handleClickMore(e, i)}>
+                                        <MoreVertIcon />
+                                    </IconButton>
+                                    <Menu
+                                        id="long-menu"
+                                        anchorEl={this.state.anchorEl}
+                                        keepMounted
+                                        open={this.state.openMore === i}
+                                        onClose={this.handleMoreClose}
+                                        PaperProps={{
+                                            style: {
+                                                width: '20vw',
+                                                marginRight: "10vw"
+                                            },
+                                        }}
+                                    >
+                                        <Button onClick={(e)=>this.handleDeleteCard(e, i)}>
+                                            刪除卡片
+                                        </Button>
+                                    </Menu>
+                                </div>
+                            }
+                            title={`${card.cardName}`}
+                            subheader={card.bankName}
+                        />
+                        <div className={classes.cardImageHolder}>
+                            <img className={classes.cardImage} src={card.cardImage} />
+                        </div>
+                        {/* <CardContent>
+                            <Typography variant="body2" color="textSecondary" component="p">
+                                {`發卡商：`}
+                            </Typography>
+                        </CardContent> */}
+                    </Card>
+                </ListItem>
+            )
+        });
         return (
             <div className={classes.root}>
-                <List subheader={<ListSubheader>我的三倍券領取方式 (卡伯會依此進行優惠推薦)</ListSubheader>} className={classes.root}>
+                <List subheader={<ListSubheader>我的信用卡 (卡伯會依此進行優惠推薦)</ListSubheader>} className={classes.root}>
                     <ListItem>
                         <ListItemIcon>
                             <Badge
@@ -133,24 +146,25 @@ class MainInfo extends Component {
                                 }}
                                 color="secondary"
                                 badgeContent={this.props.num_cards}>
-                                <PhonelinkRingIcon />
+                                <CreditCardIcon />
                             </Badge>
+
                         </ListItemIcon>
-                        <ListItemText id={`setting-cards`}
-                            primary={`更改三倍券使用方式`}
+                        <ListItemText 
+                        id={`setting-cards`}
+                            primary={`新增信用卡`}
                         />
                         <ListItemSecondaryAction>
-                            <IconButton edge="end" aria-label="comments" >
+                            <IconButton edge="end" aria-label="comments" component={Link} to="/card/select">
                                 <KeyboardArrowRightIcon />
                             </IconButton>
                         </ListItemSecondaryAction>
                     </ListItem>
                     <Divider />
-                    {tripleInfo}
+                    {list}
                 </List>
             </div>
         )
     }
 }
-// 
 export default withStyles(useStyles)(MainInfo)

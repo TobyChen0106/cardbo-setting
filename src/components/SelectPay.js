@@ -24,6 +24,8 @@ import PhoneIcon from '@material-ui/icons/Phone';
 import MailIcon from '@material-ui/icons/Mail';
 import LocationOnIcon from '@material-ui/icons/LocationOn';
 import DoneIcon from '@material-ui/icons/Done';
+import AppTitle from './AppTitle';
+
 const useStyles = (theme) => ({
     root: {
         width: '100vw',
@@ -49,10 +51,17 @@ const useStyles = (theme) => ({
         fontSize: "1.2rem",
         marginTop: "0.5rem"
     },
-    customBadge: {
-        backgroundColor: "#2fc4b2",
-        color: "white"
-    }
+    doneIcone: {
+        backgroundColor: "#5CA9F8",
+        color: "white",
+        borderRadius: "50%",
+    },
+    cardImage: {
+        width: "20vw",
+        height: "20vw",
+        borderRadius: "2.5vw",
+        marginRight: "5vw",
+    },
 });
 
 class MainInfo extends Component {
@@ -62,42 +71,41 @@ class MainInfo extends Component {
             selectedPays: []
         }
     }
-    hadleSelectPay = (e, i) => {
+
+    componentDidMount = () => {
+        window.scrollTo(0, 0)
+    }
+
+    hadleSelectPay = (e, payID) => {
         e.preventDefault();
-        const index = this.state.selectedPays.findIndex(f => f === i);
-        if (index === -1) {
-            this.setState(pre => {
-                return { selectedPays: [i, ...pre.selectedPays] }
-            })
-        } else {
-            var new_selectedPays = this.state.selectedPays
-            new_selectedPays.splice(index, 1)
-            this.setState({ selectedPays: new_selectedPays })
-        }
+        this.props.updateUserPays(payID);
     }
     render() {
         const { classes } = this.props;
         const list = this.props.pay_list.map((i, index) => {
-            const selected = this.state.selectedPays.findIndex(f => f === index) === -1 ? null :
-                (
-                    <ListItemSecondaryAction>
-                        <IconButton edge="end" aria-label="comments">
-                            <KeyboardArrowRightIcon />
-                        </IconButton>
-                        123456
-                    </ListItemSecondaryAction>
-                );
-            const selectedOpacity = this.state.selectedPays.findIndex(f => f === index) === -1 ? null : { opacity: 0.5 }
+            // const done = this.state.selectedPays.findIndex(f => f === index) === -1 ? null : (<DoneIcon className={classes.doneIcone} style={{ fontSize: 20 }} />);
+            const selected = this.props.ownPays.findIndex(f => f === i.payID) !== -1;
+            const done = selected ? `已選擇` : null;
             return (
                 <>
-                    <ListItem onClick={(e) => this.hadleSelectPay(e, index)}>
+                    <ListItem onClick={(e) => this.hadleSelectPay(e, i.payID)}>
                         <ListItemIcon>
-                            <Avatar className={classes.avatar} alt="Pay" src={i.payImage} style={selectedOpacity} />
+                            <Badge
+                                classes={{ badge: classes.doneIcone }}
+                                anchorOrigin={{
+                                    vertical: 'bottom',
+                                    horizontal: 'right',
+                                }}
+                                color="secondary"
+                                badgeContent={selected ? <DoneIcon style={{ fontSize: 10 }} /> : null}>
+                                <img className={classes.cardImage} src={i.payImage} style={selected ? { boxShadow: "0 0 5px 5px #5CA9F8" } : null} />
+                            </Badge>
+                            {/* <Avatar className={classes.avatar} alt="Pay" src={i.payImage} /> */}
                         </ListItemIcon>
                         <ListItemText id={`setting-cards`}
                             primary={i.payName}
                             secondary={null} />
-                        {/* {selected} */}
+                        {done}
                     </ListItem>
                     <Divider />
                 </>

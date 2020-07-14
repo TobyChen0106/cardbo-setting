@@ -7,6 +7,7 @@ import SaveIcon from '@material-ui/icons/Save';
 import DoneIcon from '@material-ui/icons/Done';
 import Badge from '@material-ui/core/Badge';
 import Fade from 'react-reveal/Fade';
+import AppTitle from './AppTitle';
 import { Redirect } from "react-router-dom";
 
 const useStyles = (theme) => ({
@@ -46,7 +47,9 @@ class SetSimpleInfo extends Component {
             ],
         });
     }
-
+    componentDidMount= ()=>{
+        window.scrollTo(0, 0)
+    }
     handleDataChange = (e) => {
         const info = e.target.value;
         switch (this.state.type) {

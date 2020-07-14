@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { withStyles, makeStyles } from '@material-ui/core/styles';
-import { Link } from "react-router-dom";
+import { Link, Redirect } from "react-router-dom";
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
@@ -24,9 +24,10 @@ import PhoneIcon from '@material-ui/icons/Phone';
 import MailIcon from '@material-ui/icons/Mail';
 import LocationOnIcon from '@material-ui/icons/LocationOn';
 import DoneIcon from '@material-ui/icons/Done';
+import AppTitle from './AppTitle';
+
 const useStyles = (theme) => ({
     root: {
-        width: '100vw',
     },
     avatarHolder: {
         paddingTop: "1rem",
@@ -56,13 +57,29 @@ const useStyles = (theme) => ({
 class MainInfo extends Component {
     constructor(props) {
         super(props);
+        this.state = {
+            tripleFlag: false
+        }
     }
-
+    componentDidMount = () => {
+        window.scrollTo(0, 0)
+    }
+    handleSetTriple = (e) => {
+        e.preventDefault();
+        if (this.props.triple) {
+            this.setState({ tripleFlag: true })
+        } else {
+            this.props.handleSetTriple()
+        }
+    }
     render() {
         const { classes } = this.props;
-
+        if (this.state.tripleFlag) {
+            return <Redirect to='/triple' />;
+        }
         return (
-            <>
+            <div className={classes.root}>
+                {/* <AppTitle /> */}
                 <div className={classes.avatarHolder}>
                     <Avatar alt="User Avatar" src={this.props.userAvatar} className={classes.avatar} />
                     <div className={classes.displayName}>
@@ -130,7 +147,7 @@ class MainInfo extends Component {
                         <ListItemText id={`setting-pay`} primary={`三倍券綁定`}
                             secondary={this.props.triple ? `已設定` : `未設定`} />
                         <ListItemSecondaryAction>
-                            <IconButton edge="end" aria-label="comments" component={Link} to="/tripple">
+                            <IconButton edge="end" aria-label="comments" onClick={this.handleSetTriple}>
                                 <KeyboardArrowRightIcon />
                             </IconButton>
                         </ListItemSecondaryAction>
@@ -218,7 +235,7 @@ class MainInfo extends Component {
                         </ListItemSecondaryAction>
                     </ListItem>
                 </List>
-            </>
+            </div>
         )
     }
 }

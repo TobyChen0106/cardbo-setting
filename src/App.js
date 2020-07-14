@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import './App.css';
-import SelectCards from './containers/SelectCards';
 import Setting from './containers/Setting';
 
 import { BrowserRouter } from "react-router-dom";
