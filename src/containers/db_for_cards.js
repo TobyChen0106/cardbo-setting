@@ -11,7 +11,7 @@ const bank_list = ['台新銀行', '渣打銀行', '彰化銀行', '花旗銀行
 
 export const banks = bank_list.map((i, index) => (
     {
-        bankID: `bank${index}`,
+        _id: `bank${index}`,
         bankName: bank_list[index],
         bankImage: '/images/pays/autopass-logo.png',
         bankCode: `${index}`,
@@ -23,9 +23,9 @@ export const cards = banks.map((bank, indexb) => (
     card_id_list.map((card, index) => (
         {
             cardName: `${bank.bankName}-card-${card}`,
-            cardID: `card${indexb * 20 + index}`,
+            _id: `card${indexb * 20 + index}`,
             bankName: bank.bankName,
-            bankID: bank.bankID,
+            bankID: bank._id,
             cardImage: '/images/cards/card-01.jpg',
             offers: []
         }
@@ -36,12 +36,18 @@ const pay_id_list = [...Array(13).keys()];
 
 export const pays = pay_id_list.map((i, index) => (
     {
-        payID: `pay${index}`,
+        _id: `pay${index}`,
         payName: "Line Pay",
         payImage: '/images/pays/autopass-logo.png',
         offers: [],
     }
 ));
-// for(var i=0 ; i<card_list.length ; ++i){
-//     console.log(card_list[i]);
-// }
+
+
+const pay = [
+    {
+        payName: "Line Pay",
+        payImage: '/images/pays/autopass-logo.png',
+        offers: [],
+    },
+]

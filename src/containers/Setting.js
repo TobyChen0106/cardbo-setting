@@ -41,14 +41,6 @@ class Setting extends Component {
         this.state = {
             OS: undefined,
             user: undefined,
-            cards: [{
-                bank: '',
-                card: '',
-                cardID: '',
-                selectedBank: null,
-                selectedCard: null,
-                options: []
-            }],
 
             bank_list: [],
             card_list: [],
@@ -73,8 +65,9 @@ class Setting extends Component {
             displayName: "Toby",
             userImage: 'https://react.semantic-ui.com/images/avatar/small/joe.jpg'
         }
+        
         const user = {
-            lineID: profile.userId,
+            _id: profile.userId,
             displayName: profile.displayName,
             userImage: profile.userImage,
             phone: undefined,
@@ -84,8 +77,8 @@ class Setting extends Component {
             ownCards: ["card1", "card2"],
             ownPays: ["pay1", "pay2"],
 
-            triple: "信用卡", //
-            tripleCard: undefined,
+            triple: "實體券", //
+            tripleCardorPayID: "card14",
         }
 
         this.setState({
@@ -215,7 +208,18 @@ class Setting extends Component {
             liff.closeWindow();
         });
     }
-
+    handleCloseSetting = () =>{
+        liff.sendMessages([
+            {
+                type: 'text',
+                text: '設定完成!'
+            }
+        ]).catch((err) => {
+            console.log('error', err);
+        }).then(() => {
+            liff.closeWindow();
+        });
+    }
     render() {
         const { classes } = this.props;
         if (this.state.loading) {
@@ -226,7 +230,7 @@ class Setting extends Component {
         else {
             return (
                 <div className={classes.root}>
-                    <AppTitle />
+                    <AppTitle handleCloseSetting={this.handleCloseSetting}/>
                     <Switch component={Fader}>
                         <Route exact={true} path="/"
                             render={(props) => (
@@ -273,8 +277,11 @@ class Setting extends Component {
                             )} />
                         <Route exact={true} path="/triple" >
                             <SelectTriple
+                                card_list={this.state.card_list}
+                                pay_list={this.state.pay_list}
                                 triple={this.state.user.triple}
-                                tripleCardorPayID={this.state.user.tripleCard}
+                                tripleCardorPayID={this.state.user.tripleCardorPayID}
+                                handleSetTriple={this.handleSetTriple}
                             />
                         </Route>
                         <Route exact={true} path="/info"

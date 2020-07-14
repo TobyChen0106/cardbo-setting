@@ -56,9 +56,10 @@ class AppTitle extends Component {
     }
     handleBack = () => {
         const pathArr = this.props.location.pathname.split('/').filter(p => p)
-
+        
         if (pathArr.length === 0) {
             console.log("close liff")
+            this.props.handleCloseSetting()
         } else {
             var endPath = "/";
             for (var i = 0; i < pathArr.length - 1; ++i) {

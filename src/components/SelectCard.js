@@ -12,12 +12,8 @@ import Avatar from '@material-ui/core/Avatar';
 
 import DoneIcon from '@material-ui/icons/Done';
 import Badge from '@material-ui/core/Badge';
-import Modal from 'react-modal';
-import Fade from 'react-reveal/Fade';
-
 import Carousel from "react-multi-carousel";
 import "react-multi-carousel/lib/styles.css";
-import * as Scroll from 'react-scroll';
 
 
 const responsive = {
@@ -147,12 +143,12 @@ class SelectCard extends Component {
     render() {
         const { classes } = this.props;
         const list = this.props.bank_list.map((i, index) => {
-            const cardCarouselStyle = i.bankID === this.state.showBankdCarouselIndex ? { height: "40vw" } : { height: "0" };
+            const cardCarouselStyle = i._id === this.state.showBankdCarouselIndex ? { height: "40vw" } : { height: "0" };
 
-            const carouselCards = this.props.card_list.filter(c => c.bankID === i.bankID);
+            const carouselCards = this.props.card_list.filter(c => c.bankID === i._id);
             return (
-                <div id={`bank-div-${i.bankID}`}>
-                    <ListItem onClick={(e) => this.handleSelectBank(e, i.bankID)}>
+                <div id={`bank-div-${i._id}`}>
+                    <ListItem onClick={(e) => this.handleSelectBank(e, i._id)}>
                         <ListItemIcon>
                             <Badge
                                 classes={{ badge: classes.doneIcone }}
@@ -207,9 +203,9 @@ class SelectCard extends Component {
                             focusOnSelect={false}
                         >
                             {carouselCards.map((c, index) => {
-                                const selected = this.props.ownCards.findIndex(cs => cs === c.cardID) !== -1;
+                                const selected = this.props.ownCards.findIndex(cs => cs === c._id) !== -1;
                                 return (
-                                    <div id={`card-div-${c.cardName}`} className={classes.card} onClick={(e) => this.handleSelectCard(e, c.cardID)}>
+                                    <div id={`card-div-${c.cardName}`} className={classes.card} onClick={(e) => this.handleSelectCard(e, c._id)}>
                                         <Badge
                                             classes={{ badge: classes.doneIcone }}
                                             anchorOrigin={{

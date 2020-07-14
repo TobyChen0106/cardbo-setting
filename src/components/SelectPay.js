@@ -84,11 +84,11 @@ class MainInfo extends Component {
         const { classes } = this.props;
         const list = this.props.pay_list.map((i, index) => {
             // const done = this.state.selectedPays.findIndex(f => f === index) === -1 ? null : (<DoneIcon className={classes.doneIcone} style={{ fontSize: 20 }} />);
-            const selected = this.props.ownPays.findIndex(f => f === i.payID) !== -1;
+            const selected = this.props.ownPays.findIndex(f => f === i._id) !== -1;
             const done = selected ? `已選擇` : null;
             return (
                 <>
-                    <ListItem onClick={(e) => this.hadleSelectPay(e, i.payID)}>
+                    <ListItem onClick={(e) => this.hadleSelectPay(e, i._id)}>
                         <ListItemIcon>
                             <Badge
                                 classes={{ badge: classes.doneIcone }}

@@ -84,8 +84,9 @@ class MainInfo extends Component {
         // }
         const { classes } = this.props;
         const list = this.props.ownCards.map((i, index) => {
-            const card = this.props.card_list.find(c => c.cardID === i);
-            const bank = this.props.bank_list.find(b => b.bankID === card.bankID);
+            const card = this.props.card_list.find(c => c._id === i);
+            const bank = this.props.bank_list.find(b => b._id === card.bankID);
+
             return (
                 <ListItem>
                     <Card className={classes.root}>
