@@ -22,7 +22,7 @@ import { banks, cards, pays } from './db_for_cards';
 import { BrowserRouter, HashRouter, Route } from "react-router-dom";
 import Switch from 'react-router-transition-switch';
 import Fader from 'react-fader';
-
+import { NotificationContainer, NotificationManager } from 'react-notifications';
 import Divider from '@material-ui/core/Divider';
 // Liff
 const liff = window.liff;
@@ -56,7 +56,65 @@ class Setting extends Component {
         };
 
     }
+    componentWillMount = () => {
 
+        liff.init({
+            liffId: "1654394004-qwePlx6E"
+        }).then(() => {
+            if (!liff.isLoggedIn()) {
+                liff.login({ redirectUri: ("https://setting.cardbo.info/") });
+            }
+        }).catch(function (error) {
+            console.log("[Error] " + error);
+        }).then(
+            () => liff.getProfile()
+        ).catch(function (error) {
+            console.log("[Error] " + error);
+        }).then((profile) => {
+            if (!profile) {
+                console.log("USER PROFILE ERROR!");
+                // this.createNotification("error", "無法載入資料", "請確認網路連線狀況");
+            } else {
+                if (profile) {
+                    fetch('/api/getUserProfile', {
+                        method: 'POST',
+                        body: JSON.stringify({
+                            lineID: profile.lineID,
+                            displayName: profile.displayName,
+                            userImage: profile.userImage,
+                        }),
+                        headers: new Headers({
+                            'Content-Type': 'application/json'
+                        })
+                    }).catch(function (error) {
+                        console.log("[Error] " + error);
+                    }).then(
+                        res => {
+                            if (res.ok) {
+                                console.log("ok")
+                                return res.json()
+                            }
+                            else {
+                                this.createNotification("error", "無法載入資料", "請確認網路連線狀況");
+                                return null;
+                            }
+                        }
+                    ).then((data) => {
+                        console.log(data)
+                        this.setState(
+                            { loading: false }
+                        );
+                    });
+                } else {
+                    alert("無法取得使用者ID!");
+                    this.createNotification("error", "無法取得使用者ID", "請確認網路連線狀況");
+                    this.setState(
+                        { loading: false }
+                    );
+                }
+            }
+        })
+    }
     componentDidMount() {
         console.log(this.props.location)
 
@@ -65,7 +123,7 @@ class Setting extends Component {
             displayName: "Toby",
             userImage: 'https://react.semantic-ui.com/images/avatar/small/joe.jpg'
         }
-        
+
         const user = {
             _id: profile.userId,
             displayName: profile.displayName,
@@ -139,6 +197,23 @@ class Setting extends Component {
         // }
     }
 
+    createNotification = (type, title, message) => {
+        switch (type) {
+            case 'info':
+                NotificationManager.info(message, title, 2000);
+                break;
+            case 'success':
+                NotificationManager.success(message, title, 2000);
+                break;
+            case 'warning':
+                NotificationManager.warning(message, title, 200000);
+                break;
+            case 'error':
+                NotificationManager.error(message, title, 2000);
+                break;
+        }
+    }
+
     updateInfo = (info) => {
         switch (info.type) {
             case "phone":
@@ -208,7 +283,7 @@ class Setting extends Component {
             liff.closeWindow();
         });
     }
-    handleCloseSetting = () =>{
+    handleCloseSetting = () => {
         liff.sendMessages([
             {
                 type: 'text',
@@ -230,7 +305,8 @@ class Setting extends Component {
         else {
             return (
                 <div className={classes.root}>
-                    <AppTitle handleCloseSetting={this.handleCloseSetting}/>
+                    <NotificationContainer />
+                    <AppTitle handleCloseSetting={this.handleCloseSetting} />
                     <Switch component={Fader}>
                         <Route exact={true} path="/"
                             render={(props) => (

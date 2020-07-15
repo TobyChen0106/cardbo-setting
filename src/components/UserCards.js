@@ -63,6 +63,7 @@ class MainInfo extends Component {
             anchorEl: null
         }
     }
+    
     componentDidMount = () => {
         window.scrollTo(0, 0)
     }

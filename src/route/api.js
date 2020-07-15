@@ -3,36 +3,29 @@ const router = express.Router();
 const User = require('../models/User');
 const Card = require('../models/Card');
 
-router.post('/users', (req, res) => {
+router.post('/getUserProfile', (req, res) => {
     const userdata = req.body;
     if (userdata.lineID === "") {
         res.json("[ERROR] lineID empty!");
     } else {
-        User.findOne({ lineID: userdata.lineID }, (err, userResponse) => {
-            if (err) {
-                console.log(err);
-                res.json("Server User find ID Error." + String(err));
-            }
-            else if (!userResponse) {
-                const newUser = new User(userdata);
-                newUser.save().then((user) => {
-                    res.json("New user created!");
-                })
-            } else {
-                // console.log(userResponse)
-                userResponse.lineID = userdata.lineID;
-                userResponse.displayName = userdata.displayName;
-                userResponse.nickName = userdata.nickName;
-                userResponse.age = userdata.age;
-                userResponse.gender = userdata.gender;
-                userResponse.cards = userdata.cards;
-                userResponse.stores = userdata.stores;
-                
-                userResponse.save().then((user) => {
-                    res.json("User Data modified!");
-                })
-            }
-        })
+        User.findOneAndUpdate({ lineID: userdata.lineID },
+            {
+                lineID: userdata.lineID,
+                displayName: userdata.displayName,
+                userImage: userdata.userImage,
+            }, (err, userResponse) => {
+                if (err) {
+                    console.log(err);
+                    res.json("Server User find ID Error." + String(err));
+                }
+                if (!userResponse) {
+                    console.log("error empty user findOneAndUpdate!")
+                    res.json(userResponse)
+                }
+                else {
+                    res.json(userResponse)
+                }
+            })
     }
 });
 
@@ -56,7 +49,7 @@ router.post('/check-users', (req, res) => {
             // } else {
             //     res.json({ IDregistered: true });
             // }
-            else{
+            else {
                 res.json(userResponse);
             }
         })

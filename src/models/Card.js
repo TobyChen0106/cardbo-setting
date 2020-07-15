@@ -27,10 +27,6 @@ const CardSchema = new Schema({
         type: [String],
         required: true
     },
-    note: {
-        type: Note,
-        // required: true
-    }
 });
 
 const Card = mongoose.model('Card', CardSchema);

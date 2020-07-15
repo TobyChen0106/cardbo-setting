@@ -1,7 +1,7 @@
 const mongoose = require('mongoose')
 const Schema = mongoose.Schema
 
-const UserActionSchema = new Schema({
+const UserSchema = new Schema({
     lineID: String,
     displayName: String,
     userImage: String,
@@ -18,6 +18,6 @@ const UserActionSchema = new Schema({
     favos: [mongoose.ObjectId],
 })
 
-const UserAction = mongoose.model('UserAction', UserActionSchema, "useractions");
-module.exports = UserAction;
+const User= mongoose.model('User', UserSchema, "users");
+module.exports = User;
 
