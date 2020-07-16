@@ -40,19 +40,18 @@ class Setting extends Component {
         super(props);
         this.state = {
             OS: undefined,
-            user: undefined,
-
+            user: {
+                lineID: "無法載入使用者",
+                displayName: "無法載入使用者",
+                userImage: undefined,
+            },
             bank_list: [],
             card_list: [],
             pay_list: [],
-            loading: true,
-
-            select_card_height: 550 * 0.33,
-            select_card_width: 550 * 0.5,
-            select_card_list_width: 550 * 0.9,
-            window_width: 550,
-            window_height: 850,
-            enable_select_index: -1
+            loadingUser: true,
+            loadingCard: true,
+            loadingBank: true,
+            loadingPay: true,
         };
 
     }
@@ -102,16 +101,71 @@ class Setting extends Component {
                     ).then((data) => {
                         console.log(data)
                         this.setState(
-                            { loading: false }
+                            { user: data, loadingUser: false }
                         );
                     });
                 } else {
                     alert("無法取得使用者ID!");
                     this.createNotification("error", "無法取得使用者ID", "請確認網路連線狀況");
                     this.setState(
-                        { loading: false }
+                        { loadingUser: false }
                     );
                 }
+
+                fetch('/api/getCards').catch(function (error) {
+                    console.log("[Error] " + error);
+                }).then(
+                    res => {
+                        if (res.ok) {
+                            return res.json()
+                        }
+                        else {
+                            this.createNotification("error", "無法載入資料", "請確認網路連線狀況");
+                            return null;
+                        }
+                    }
+                ).then((data) => {
+                    console.log(data)
+                    this.setState(
+                        { card_list: data, loadingCard: false }
+                    );
+                });
+
+                fetch('/api/getBanks').catch(function (error) {
+                    console.log("[Error] " + error);
+                }).then(
+                    res => {
+                        if (res.ok) {
+                            return res.json()
+                        }
+                        else {
+                            this.createNotification("error", "無法載入資料", "請確認網路連線狀況");
+                            return null;
+                        }
+                    }
+                ).then((data) => {
+                    this.setState(
+                        { bank_list: data, loadingBank: false }
+                    );
+                });
+
+                fetch('/api/getPays').catch(function (error) {
+                    console.log("[Error] " + error);
+                }).then(
+                    res => {
+                        if (res.ok) {
+                            return res.json()
+                        }
+                        else {
+                            this.createNotification("error", "無法載入資料", "請確認網路連線狀況");
+                            return null;
+                        }
+                    }
+                ).then((data) => {
+                    this.setState(
+                        { pay_list: data, loadingPay: false }
+                    );
+                });
             }
         })
     }
@@ -150,53 +204,6 @@ class Setting extends Component {
         this.setState({ loading: false });
     }
 
-    formOnSubmit = () => {
-        // if (this.state.age === 0) {
-        //     window.alert('請輸入年齡!');
-        // }
-        // else if (!this.state.agreeCheck) {
-        //     window.alert('請閱讀並同意使用者服務條款!');
-        // } else {
-        //     var userCards = this.state.cards.filter(card => card.card !== '' && card.bank !== '').map((i, index) => (
-        //         this.state.allCards.filter(card => card.cardName === i.card && card.bankName === i.bank)[0].cardID
-        //     ));
-        //     // console.log(userCards)
-
-        //     const newUser = {
-        //         lineID: this.state.userId,
-        //         displayName: this.state.displayName,
-        //         nickName: this.state.nickName,
-        //         age: this.state.age,
-        //         gender: this.state.gender,
-        //         cards: userCards,
-        //     };
-        //     fetch('/api/users', {
-        //         method: 'POST',
-        //         body: JSON.stringify(newUser),
-        //         headers: new Headers({
-        //             'Content-Type': 'application/json'
-        //         })
-        //     }).catch(function (error) {
-        //         window.alert("[Error] " + error);
-        //     }).then(() => {
-        //         if (this.state.OS !== 'web') {
-        //             liff.sendMessages([{
-        //                 type: 'text',
-        //                 text: "Done!"
-        //             }]).catch(function (error) {
-        //                 window.alert("Error sending message: " + error);
-        //             }).then(() => {
-        //                 liff.closeWindow();
-        //             });
-        //         }
-        //     });
-        // }
-
-        // if (this.state.OS !== 'web') {
-        //     liff.closeWindow();
-        // }
-    }
-
     createNotification = (type, title, message) => {
         switch (type) {
             case 'info':
@@ -215,26 +222,42 @@ class Setting extends Component {
     }
 
     updateInfo = (info) => {
+        var new_user = this.state.user;
         switch (info.type) {
             case "phone":
-                this.setState(pre => {
-                    pre.user.phone = info.data;
-                    return { user: pre.user }
-                });
+                new_user.phone = info.data;
                 break;
             case "email":
-                this.setState(pre => {
-                    pre.user.email = info.data;
-                    return { user: pre.user }
-                });
+                new_user.email = info.data;
                 break;
             case "city":
-                this.setState(pre => {
-                    pre.user.city = info.data;
-                    return { user: pre.user }
-                });
+                new_user.city = info.data;
                 break;
         }
+        fetch('/api/updateUser', {
+            method: 'POST',
+            body: JSON.stringify({ new_user }),
+            headers: new Headers({
+                'Content-Type': 'application/json'
+            })
+        }).catch(function (error) {
+            console.log("[Error] " + error);
+        }).then(
+            res => {
+                if (res.ok) {
+                    console.log("ok")
+                    return res.json()
+                }
+                else {
+                    this.createNotification("error", "無法載入資料", "請確認網路連線狀況");
+                    return null;
+                }
+            }
+        ).then((data) => {
+            this.setState(
+                { user: data }
+            );
+        });
     }
 
     updateUserCards = (cardID) => {
@@ -254,21 +277,36 @@ class Setting extends Component {
     }
 
     updateUserPays = (payID) => {
+        var new_user = this.state.user;
         if (this.state.user.ownPays.find(c => c === payID)) {
-            var new_user = this.state.user;
             new_user.ownPays = this.state.user.ownPays.filter(c => c !== payID)
-            this.setState({
-                new_user: new_user
-            });
-            console.log((new_user.ownPays))
         } else {
-            var new_user = this.state.user;
             new_user.ownPays = [payID, ...this.state.user.ownPays]
-            this.setState({
-                user: new_user
-            });
-            console.log((new_user.ownPays))
         }
+        fetch('/api/updateUser', {
+            method: 'POST',
+            body: JSON.stringify({ new_user }),
+            headers: new Headers({
+                'Content-Type': 'application/json'
+            })
+        }).catch(function (error) {
+            console.log("[Error] " + error);
+        }).then(
+            res => {
+                if (res.ok) {
+                    console.log("ok")
+                    return res.json()
+                }
+                else {
+                    this.createNotification("error", "無法載入資料", "請確認網路連線狀況");
+                    return null;
+                }
+            }
+        ).then((data) => {
+            this.setState(
+                { user: data }
+            );
+        });
     }
 
     handleSetTriple = () => {
@@ -295,9 +333,10 @@ class Setting extends Component {
             liff.closeWindow();
         });
     }
+    
     render() {
         const { classes } = this.props;
-        if (this.state.loading) {
+        if (this.state.loadingUser || this.state.loadingBank || this.state.loadingCard || this.state.loadingPay) {
             return (<div className="my-loading">
                 <ReactLoading type={'balls'} color={'#fff'} height={'20vh'} width={'20vw'} />
             </div>)
