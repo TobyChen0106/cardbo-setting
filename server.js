@@ -13,7 +13,7 @@ const apiRoute = require('./src/route/api');
 // })
 // mongodb
 const mongoose = require('mongoose');
-const dbName = "dbPostGov"
+const dbName = "dbCardbo-v2"
 const usrName = "cardbo"
 const usrPswd = "69541"
 mongoURL = `mongodb+srv://${usrName}:${usrPswd}@cardbo-br3ga.gcp.mongodb.net/${dbName}?retryWrites=true&w=majority`
