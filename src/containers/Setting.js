@@ -11,6 +11,7 @@ import ReactLoading from 'react-loading';
 import AppTitle from '../components/AppTitle';
 import MainInfo from '../components/MainInfo';
 import SelectCard from '../components/SelectCard';
+import SelectOneCard from '../components/SelectOneCard';
 import SelectPay from '../components/SelectPay';
 import SelectTriple from '../components/SelectTriple';
 import SetSimpleInfo from '../components/SetSimpleInfo';
@@ -44,6 +45,14 @@ class Setting extends Component {
                 lineID: "無法載入使用者",
                 displayName: "無法載入使用者",
                 userImage: undefined,
+                phone: undefined,
+                email: undefined,
+                city: undefined,
+                favos: [],
+                ownCards: [],
+                ownPays: [],
+                tripleType: undefined,
+                tripleCardorPayID: undefined,
             },
             bank_list: [],
             card_list: [],
@@ -72,15 +81,15 @@ class Setting extends Component {
         }).then((profile) => {
             if (!profile) {
                 console.log("USER PROFILE ERROR!");
-                // this.createNotification("error", "無法載入資料", "請確認網路連線狀況");
+                this.createNotification("error", "無法載入資料", "請確認網路連線狀況");
             } else {
                 if (profile) {
                     fetch('/api/getUserProfile', {
                         method: 'POST',
                         body: JSON.stringify({
-                            lineID: profile.lineID,
+                            lineID: profile.userId,
                             displayName: profile.displayName,
-                            userImage: profile.userImage,
+                            userImage: profile.pictureUrl,
                         }),
                         headers: new Headers({
                             'Content-Type': 'application/json'
@@ -125,7 +134,6 @@ class Setting extends Component {
                         }
                     }
                 ).then((data) => {
-                    console.log(data)
                     this.setState(
                         { card_list: data, loadingCard: false }
                     );
@@ -170,38 +178,36 @@ class Setting extends Component {
         })
     }
     componentDidMount() {
-        console.log(this.props.location)
+        // const profile = {
+        //     userId: "123456",
+        //     displayName: "Toby",
+        //     userImage: 'https://react.semantic-ui.com/images/avatar/small/joe.jpg'
+        // }
 
-        const profile = {
-            userId: "123456",
-            displayName: "Toby",
-            userImage: 'https://react.semantic-ui.com/images/avatar/small/joe.jpg'
-        }
+        // const user = {
+        //     _id: profile.userId,
+        //     displayName: profile.displayName,
+        //     userImage: profile.userImage,
+        //     phone: undefined,
+        //     email: undefined,
+        //     city: undefined,
+        //     favos: ["offer1", "offer2"],
+        //     ownCards: ["card1", "card2"],
+        //     ownPays: ["pay1", "pay2"],
 
-        const user = {
-            _id: profile.userId,
-            displayName: profile.displayName,
-            userImage: profile.userImage,
-            phone: undefined,
-            email: undefined,
-            city: undefined,
-            favos: ["offer1", "offer2"],
-            ownCards: ["card1", "card2"],
-            ownPays: ["pay1", "pay2"],
+        //     triple: "實體券", //
+        //     tripleCardorPayID: "card14",
+        // }
 
-            triple: "實體券", //
-            tripleCardorPayID: "card14",
-        }
-
-        this.setState({
-            user: user,
-        });
-        this.setState({
-            bank_list: banks,
-            card_list: cards,
-            pay_list: pays,
-        });
-        this.setState({ loading: false });
+        // this.setState({
+        //     user: user,
+        // });
+        // this.setState({
+        //     bank_list: banks,
+        //     card_list: cards,
+        //     pay_list: pays,
+        // });
+        // this.setState({ loading: false });
     }
 
     createNotification = (type, title, message) => {
@@ -236,7 +242,42 @@ class Setting extends Component {
         }
         fetch('/api/updateUser', {
             method: 'POST',
-            body: JSON.stringify({ new_user }),
+            body: JSON.stringify(new_user),
+            headers: new Headers({
+                'Content-Type': 'application/json'
+            })
+        }).catch(function (error) {
+            console.log("[Error] " + error);
+        }).then(
+            res => {
+                if (res.ok) {
+                    console.log("ok")
+                    return res.json()
+                }
+                else {
+                    this.createNotification("error", "無法載入資料", "請確認網路連線狀況");
+                    return null;
+                }
+            }
+        ).then((data) => {
+            this.setState(
+                { user: data }
+            );
+            console.log(data)
+        });
+    }
+
+    updateUserCards = (cardID) => {
+        var new_user = this.state.user;
+
+        if (this.state.user.ownCards.find(c => c === cardID)) {
+            new_user.ownCards = this.state.user.ownCards.filter(c => c !== cardID)
+        } else {
+            new_user.ownCards = [cardID, ...this.state.user.ownCards]
+        }
+        fetch('/api/updateUser', {
+            method: 'POST',
+            body: JSON.stringify(new_user),
             headers: new Headers({
                 'Content-Type': 'application/json'
             })
@@ -260,20 +301,51 @@ class Setting extends Component {
         });
     }
 
-    updateUserCards = (cardID) => {
+    updateUserOneCard = (cardID) => {
+        var new_user = this.state.user;
+
         if (this.state.user.ownCards.find(c => c === cardID)) {
-            var new_user = this.state.user;
-            new_user.ownCards = this.state.user.ownCards.filter(c => c !== cardID)
-            this.setState({
-                new_user: new_user
-            });
         } else {
-            var new_user = this.state.user;
             new_user.ownCards = [cardID, ...this.state.user.ownCards]
-            this.setState({
-                user: new_user
-            });
         }
+
+        new_user.tripleType = "信用卡";
+        new_user.tripleCardorPayID = cardID;
+        fetch('/api/updateUser', {
+            method: 'POST',
+            body: JSON.stringify(new_user),
+            headers: new Headers({
+                'Content-Type': 'application/json'
+            })
+        }).catch(function (error) {
+            console.log("[Error] " + error);
+        }).then(
+            res => {
+                if (res.ok) {
+                    console.log("ok")
+                    return res.json()
+                }
+                else {
+                    this.createNotification("error", "無法載入資料", "請確認網路連線狀況");
+                    return null;
+                }
+            }
+        ).then((data) => {
+            this.setState(
+                { user: data }
+            );
+        }).then(() => {
+            liff.sendMessages([
+                {
+                    type: 'text',
+                    text: `已綁定信用卡: ${this.state.card_list.find(c => c._id === cardID).CardName}`
+                }
+            ]).catch((err) => {
+                console.log('error', err);
+            }).then(() => {
+                liff.closeWindow();
+            });
+        });
     }
 
     updateUserPays = (payID) => {
@@ -285,7 +357,7 @@ class Setting extends Component {
         }
         fetch('/api/updateUser', {
             method: 'POST',
-            body: JSON.stringify({ new_user }),
+            body: JSON.stringify(new_user),
             headers: new Headers({
                 'Content-Type': 'application/json'
             })
@@ -321,6 +393,7 @@ class Setting extends Component {
             liff.closeWindow();
         });
     }
+
     handleCloseSetting = () => {
         liff.sendMessages([
             {
@@ -333,8 +406,9 @@ class Setting extends Component {
             liff.closeWindow();
         });
     }
-    
+
     render() {
+
         const { classes } = this.props;
         if (this.state.loadingUser || this.state.loadingBank || this.state.loadingCard || this.state.loadingPay) {
             return (<div className="my-loading">
@@ -355,8 +429,8 @@ class Setting extends Component {
                                     userCity={this.state.user.city}
                                     num_cards={this.state.user.ownCards.length}
                                     num_pays={this.state.user.ownPays.length}
-                                    triple={this.state.user.triple}
-                                    tripleCard={this.state.user.tripleCard}
+                                    tripleType={this.state.user.tripleType}
+                                    tripleCardorPayID={this.state.user.tripleCardorPayID}
                                     displayName={this.state.user.displayName}
                                     userAvatar={this.state.user.userImage}
                                     handleSetTriple={this.handleSetTriple}
@@ -380,21 +454,35 @@ class Setting extends Component {
                                     bank_list={this.state.bank_list}
                                     card_list={this.state.card_list}
                                     ownCards={this.state.user.ownCards}
+                                    tripleType={this.state.user.tripleType}
+                                    tripleCardorPayID={this.state.user.tripleCardorPayID}
                                     pay_list={this.state.pay_list} />
                             )} />
+                        <Route exact={true} path="/onecard"
+                            render={(props) => (
+                                <SelectOneCard
+                                    {...props}
+                                    updateUserOneCard={this.updateUserOneCard}
+                                    bank_list={this.state.bank_list}
+                                    card_list={this.state.card_list}
+                                    ownCards={this.state.user.ownCards}
+                                    pay_list={this.state.pay_list} />
+                            )} />
+
                         <Route exact={true} path="/pay"
                             render={(props) => (
                                 <SelectPay
                                     {...props}
                                     updateUserPays={this.updateUserPays}
                                     ownPays={this.state.user.ownPays}
-                                    pay_list={this.state.pay_list} />
+                                    pay_list={this.state.pay_list}
+                                />
                             )} />
                         <Route exact={true} path="/triple" >
                             <SelectTriple
                                 card_list={this.state.card_list}
                                 pay_list={this.state.pay_list}
-                                triple={this.state.user.triple}
+                                tripleType={this.state.user.tripleType}
                                 tripleCardorPayID={this.state.user.tripleCardorPayID}
                                 handleSetTriple={this.handleSetTriple}
                             />

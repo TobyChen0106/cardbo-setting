@@ -18,7 +18,7 @@ const usrName = "cardbo"
 const usrPswd = "69541"
 mongoURL = `mongodb+srv://${usrName}:${usrPswd}@cardbo-br3ga.gcp.mongodb.net/${dbName}?retryWrites=true&w=majority`
 mongoose.connect(mongoURL, {useNewUrlParser: true});
-
+mongoose.set('useFindAndModify', false);
 db = mongoose.connection;
 db.on('error', e => {
 	console.log(e);

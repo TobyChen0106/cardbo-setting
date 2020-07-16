@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { withStyles, makeStyles } from '@material-ui/core/styles';
-import { Link, Redirect } from "react-router-dom";
+import { Link, Redirect, withRouter } from "react-router-dom";
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
@@ -58,7 +58,16 @@ class MainInfo extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            tripleFlag: false
+            tripleFlag: false,
+            onecardFlag: false,
+            
+        }
+    }
+    componentWillMount = () => {
+        const params = new URLSearchParams(this.props.location.search);
+        const type = params.get('type');
+        if(type === "onecard"){
+            this.setState({onecardFlag: true})
         }
     }
     componentDidMount = () => {
@@ -77,6 +86,10 @@ class MainInfo extends Component {
         if (this.state.tripleFlag) {
             return <Redirect to='/triple' />;
         }
+        if (this.state.onecardFlag) {
+            return <Redirect to='/onecard' />;
+        }
+
         return (
             <div className={classes.root}>
                 {/* <AppTitle /> */}
@@ -140,12 +153,12 @@ class MainInfo extends Component {
                                     horizontal: 'right',
                                 }}
                                 color="secondary"
-                                badgeContent={this.props.triple ? <DoneIcon style={{ fontSize: 10 }} /> : null}>
+                                badgeContent={this.props.tripleType ? <DoneIcon style={{ fontSize: 10 }} /> : null}>
                                 <PhonelinkRingIcon />
                             </Badge>
                         </ListItemIcon>
                         <ListItemText id={`setting-pay`} primary={`三倍券綁定`}
-                            secondary={this.props.triple ? `已設定` : `未設定`} />
+                            secondary={!this.props.tripleType ? `未設定` : `${this.props.tripleType}`} />
                         <ListItemSecondaryAction>
                             <IconButton edge="end" aria-label="comments" onClick={this.handleSetTriple}>
                                 <KeyboardArrowRightIcon />
@@ -239,4 +252,4 @@ class MainInfo extends Component {
         )
     }
 }
-export default withStyles(useStyles)(MainInfo)
+export default withRouter(withStyles(useStyles)(MainInfo))

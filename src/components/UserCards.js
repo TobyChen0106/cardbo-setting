@@ -36,6 +36,7 @@ import Button from '@material-ui/core/Button';
 import MenuItem from '@material-ui/core/MenuItem';
 const useStyles = (theme) => ({
     root: {
+        width: "100%",
     },
     avatar: {
         width: theme.spacing(6),
@@ -43,12 +44,12 @@ const useStyles = (theme) => ({
     },
     cardImageHolder: {
         width: "100%",
-        marginBottom: "5%",
-        display: "flex",
-        justifyContent: "center"
+        height: 'auto',
     },
     cardImage: {
         width: "90%",
+        padding: "5%",
+        borderRadius: "2.5vw",
     },
     paper: {
         marginRight: theme.spacing(2),
@@ -86,14 +87,14 @@ class MainInfo extends Component {
         const { classes } = this.props;
         const list = this.props.ownCards.map((i, index) => {
             const card = this.props.card_list.find(c => c._id === i);
-            const bank = this.props.bank_list.find(b => b._id === card.bankID);
+            const bank = this.props.bank_list.find(b => b._id === card.BankID);
 
             return (
                 <ListItem>
                     <Card className={classes.root}>
                         <CardHeader
                             avatar={
-                                <Avatar aria-label="Bank" className={classes.avatar} src={bank.bankImage}>
+                                <Avatar variant="square" aria-label="Bank" className={classes.avatar} src={bank.BankImage}>
                                     B
                                 </Avatar>
                             }
@@ -110,7 +111,7 @@ class MainInfo extends Component {
                                         onClose={this.handleMoreClose}
                                         PaperProps={{
                                             style: {
-                                                width: '20vw',
+                                                width: '30vw',
                                                 marginRight: "10vw"
                                             },
                                         }}
@@ -121,11 +122,11 @@ class MainInfo extends Component {
                                     </Menu>
                                 </div>
                             }
-                            title={`${card.cardName}`}
-                            subheader={card.bankName}
+                            title={`${card.CardName}`}
+                            subheader={card.BankName}
                         />
                         <div className={classes.cardImageHolder}>
-                            <img className={classes.cardImage} src={card.cardImage} />
+                            <img className={classes.cardImage} src={card.CardImage} />
                         </div>
                         {/* <CardContent>
                             <Typography variant="body2" color="textSecondary" component="p">

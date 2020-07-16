@@ -13,11 +13,11 @@ const UserSchema = new Schema({
     ownPays: [mongoose.ObjectId],
     CallCardbo_Pays_Warning: String, // "Yes"、"No"
     SortByCategory_Pays_Warning: String, // "Yes"、"No"
-    triple: String, // "實體券"、"悠遊卡"、"一卡通"、"有錢卡"、"愛金卡"、"行動支付"、"信用卡"、"先不告訴你"
-    tripleCardorPayID: [mongoose.ObjectId],
+    tripleType: String, // "實體券"、"悠遊卡"、"一卡通"、"有錢卡"、"愛金卡"、"行動支付"、"信用卡"、"先不告訴你"
+    tripleCardorPayID: mongoose.ObjectId,
     favos: [mongoose.ObjectId],
 })
 
-const User= mongoose.model('User', UserSchema, "users");
+const User= mongoose.model('User', UserSchema, "User");
 module.exports = User;
 

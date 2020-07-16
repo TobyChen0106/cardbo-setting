@@ -68,21 +68,32 @@ class MainInfo extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            selectedPays: []
+            pay_list: []
         }
     }
 
     componentDidMount = () => {
         window.scrollTo(0, 0)
+        this.setState({pay_list: this.props.pay_list.sort(this.sortPay)})
     }
 
     hadleSelectPay = (e, payID) => {
         e.preventDefault();
         this.props.updateUserPays(payID);
     }
+
+    sortPay = (a, b) => {
+        if (this.props.ownPays.find(f => f === a._id))
+            return -1
+        else if (this.props.ownPays.find(f => f === b._id))
+            return 1
+        else 
+        return 0
+    }
+
     render() {
         const { classes } = this.props;
-        const list = this.props.pay_list.map((i, index) => {
+        const list = this.state.pay_list.map((i, index) => {
             // const done = this.state.selectedPays.findIndex(f => f === index) === -1 ? null : (<DoneIcon className={classes.doneIcone} style={{ fontSize: 20 }} />);
             const selected = this.props.ownPays.findIndex(f => f === i._id) !== -1;
             const done = selected ? `已選擇` : null;
@@ -98,12 +109,12 @@ class MainInfo extends Component {
                                 }}
                                 color="secondary"
                                 badgeContent={selected ? <DoneIcon style={{ fontSize: 10 }} /> : null}>
-                                <img className={classes.cardImage} src={i.payImage} style={selected ? { boxShadow: "0 0 5px 5px #5CA9F8" } : null} />
+                                <img className={classes.cardImage} src={i.PayImage} style={selected ? { boxShadow: "0 0 5px 5px #5CA9F8" } : null} />
                             </Badge>
                             {/* <Avatar className={classes.avatar} alt="Pay" src={i.payImage} /> */}
                         </ListItemIcon>
                         <ListItemText id={`setting-cards`}
-                            primary={i.payName}
+                            primary={i.PayName}
                             secondary={null} />
                         {done}
                     </ListItem>
