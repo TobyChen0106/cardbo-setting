@@ -72,7 +72,13 @@ class MainInfo extends Component {
     }
     componentDidMount = () => {
         window.scrollTo(0, 0)
+        window.addEventListener("beforeunload", this.props.handleCloseTab);
+
     }
+    componentWillUnmount() {
+        window.removeEventListener('beforeunload', this.props.handleCloseTab);
+    }
+
     handleSetTriple = (e) => {
         e.preventDefault();
         if (this.props.triple) {

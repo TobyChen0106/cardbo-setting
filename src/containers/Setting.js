@@ -67,7 +67,7 @@ class Setting extends Component {
     componentWillMount = () => {
 
         liff.init({
-            liffId: "1654394004-qwePlx6E"
+            liffId: "1654462018-w48j1o5n"
         }).then(() => {
             if (!liff.isLoggedIn()) {
                 liff.login({ redirectUri: ("https://setting.cardbo.info/") });
@@ -178,36 +178,19 @@ class Setting extends Component {
         })
     }
     componentDidMount() {
-        // const profile = {
-        //     userId: "123456",
-        //     displayName: "Toby",
-        //     userImage: 'https://react.semantic-ui.com/images/avatar/small/joe.jpg'
-        // }
+        window.addEventListener("beforeunload", this.handleCloseTab);
+    }
 
-        // const user = {
-        //     _id: profile.userId,
-        //     displayName: profile.displayName,
-        //     userImage: profile.userImage,
-        //     phone: undefined,
-        //     email: undefined,
-        //     city: undefined,
-        //     favos: ["offer1", "offer2"],
-        //     ownCards: ["card1", "card2"],
-        //     ownPays: ["pay1", "pay2"],
+    componentWillUnmount() {
+        // window.removeEventListener('beforeunload', this.handleCloseTab);
+    }
 
-        //     triple: "實體券", //
-        //     tripleCardorPayID: "card14",
-        // }
-
-        // this.setState({
-        //     user: user,
-        // });
-        // this.setState({
-        //     bank_list: banks,
-        //     card_list: cards,
-        //     pay_list: pays,
-        // });
-        // this.setState({ loading: false });
+    handleCloseTab(e) {
+        e.preventDefault();
+        console.log("close tab");
+        this.handleCloseSetting();
+        (e || window.event).returnValue = "close tab"; //Gecko + IE
+        return "close tab";
     }
 
     createNotification = (type, title, message) => {
@@ -424,6 +407,7 @@ class Setting extends Component {
                         <Route exact={true} path="/"
                             render={(props) => (
                                 <MainInfo
+                                    handleCloseTab={this.handleCloseTab}
                                     userPhone={this.state.user.phone}
                                     userEmail={this.state.user.email}
                                     userCity={this.state.user.city}
