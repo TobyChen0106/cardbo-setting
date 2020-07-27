@@ -77,9 +77,9 @@ class MainInfo extends Component {
         this.setState({pay_list: this.props.pay_list.sort(this.sortPay)})
     }
 
-    hadleSelectPay = (e, payID) => {
+    hadleSelectPay = (e, payID, payName) => {
         e.preventDefault();
-        this.props.updateUserPays(payID);
+        this.props.updateUserPays(payID, payName);
     }
 
     sortPay = (a, b) => {
@@ -99,7 +99,7 @@ class MainInfo extends Component {
             const done = selected ? `已選擇` : null;
             return (
                 <>
-                    <ListItem onClick={(e) => this.hadleSelectPay(e, i._id)}>
+                    <ListItem onClick={(e) => this.hadleSelectPay(e, i._id, i.PayName)}>
                         <ListItemIcon>
                             <Badge
                                 classes={{ badge: classes.doneIcone }}

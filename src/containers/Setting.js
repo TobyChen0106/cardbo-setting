@@ -330,11 +330,12 @@ class Setting extends Component {
         });
     }
 
-    updateUserPays = (payID) => {
+    updateUserPays = (payID, payName) => {
         var new_user = this.state.user;
         if (this.state.user.ownPays.find(c => c === payID)) {
             new_user.ownPays = this.state.user.ownPays.filter(c => c !== payID)
         } else {
+            this.props.alert.success(`已綁定: ${payName}`);
             new_user.ownPays = [payID, ...this.state.user.ownPays]
         }
         fetch('/api/updateUser', {
