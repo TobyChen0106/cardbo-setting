@@ -7,7 +7,6 @@ import { withStyles } from '@material-ui/core/styles';
 import ReactLoading from 'react-loading';
 
 // components
-
 import AppTitle from '../components/AppTitle';
 import MainInfo from '../components/MainInfo';
 import SelectCard from '../components/SelectCard';
@@ -26,17 +25,9 @@ import Switch from 'react-router-transition-switch';
 import Fader from 'react-fader';
 import { NotificationContainer, NotificationManager } from 'react-notifications';
 import Divider from '@material-ui/core/Divider';
+import { withAlert } from "react-alert";
 // Liff
 const liff = window.liff;
-
-const useStyles = (theme) => ({
-    root: {
-        width: "100vw",
-        minHeight: "100vh",
-    },
-
-});
-
 class Setting extends Component {
     constructor(props) {
         super(props);
@@ -80,11 +71,17 @@ class Setting extends Component {
         ).catch(function (error) {
             console.log("[Error] " + error);
         }).then((profile) => {
+            // const profile = {
+            //     userId: "U879a5cb6920a17888301f36935418744",
+            //     displayName: "Toby",
+            //     pictureUrl: "",
+            // };
             if (!profile) {
                 console.log("USER PROFILE ERROR!");
                 this.createNotification("error", "無法載入資料", "請確認網路連線狀況");
             } else {
                 if (profile) {
+
                     fetch('/api/getUserProfile', {
                         method: 'POST',
                         body: JSON.stringify({
@@ -251,12 +248,13 @@ class Setting extends Component {
         });
     }
 
-    updateUserCards = (cardID) => {
+    updateUserCards = (cardID, cardName) => {
         var new_user = this.state.user;
 
         if (this.state.user.ownCards.find(c => c === cardID)) {
             new_user.ownCards = this.state.user.ownCards.filter(c => c !== cardID)
         } else {
+            this.props.alert.success(`已綁定: ${cardName}`);
             new_user.ownCards = [cardID, ...this.state.user.ownCards]
         }
         fetch('/api/updateUser', {
@@ -410,7 +408,7 @@ class Setting extends Component {
             });
         });
     }
-    
+
     handleSetTriple = () => {
         liff.sendMessages([
             {
@@ -438,7 +436,6 @@ class Setting extends Component {
     }
 
     render() {
-
         const { classes } = this.props;
         if (this.state.loadingUser || this.state.loadingBank || this.state.loadingCard || this.state.loadingPay) {
             return (<div className="my-loading">
@@ -447,7 +444,7 @@ class Setting extends Component {
         }
         else {
             return (
-                <div className={classes.root}>
+                <div>
                     <NotificationContainer />
                     <AppTitle handleCloseSetting={this.handleCloseSetting} />
                     <Switch component={Fader}>
@@ -479,6 +476,7 @@ class Setting extends Component {
                             )} />
                         <Route exact={true} path="/card/select"
                             render={(props) => (
+
                                 <SelectCard
                                     {...props}
                                     updateUserCards={this.updateUserCards}
@@ -539,4 +537,4 @@ class Setting extends Component {
         }
     }
 }
-export default withStyles(useStyles)(Setting);
+export default withAlert()(Setting);

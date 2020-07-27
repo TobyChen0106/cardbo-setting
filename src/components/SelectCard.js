@@ -9,12 +9,10 @@ import ListSubheader from '@material-ui/core/ListSubheader';
 import Divider from '@material-ui/core/Divider';
 import Avatar from '@material-ui/core/Avatar';
 
-
 import DoneIcon from '@material-ui/icons/Done';
 import Badge from '@material-ui/core/Badge';
 import Carousel from "react-multi-carousel";
 import "react-multi-carousel/lib/styles.css";
-
 
 const responsive = {
     superLargeDesktop: {
@@ -135,9 +133,9 @@ class SelectCard extends Component {
         }
     }
 
-    handleSelectCard = (e, cardID) => {
+    handleSelectCard = (e, cardID, cardName) => {
         e.preventDefault();
-        this.props.updateUserCards(cardID);
+        this.props.updateUserCards(cardID, cardName);
     }
 
     handleCloseModal = () => {
@@ -145,6 +143,7 @@ class SelectCard extends Component {
     }
 
     render() {
+        // const alert = this.props.alert;
         const { classes } = this.props;
         const list = this.props.bank_list.filter(b => b.BankCards.length !== 0 && b.BankName !== "電子票證").map((i, index) => {
             const cardCarouselStyle = i._id === this.state.showBankdCarouselIndex ? { height: "40vw" } : { height: "0" };
@@ -209,7 +208,7 @@ class SelectCard extends Component {
                             {carouselCards.map((c, index) => {
                                 const selected = this.props.ownCards.findIndex(cs => cs === c._id) !== -1;
                                 return (
-                                    <div id={`card-div-${c.CardName}`} className={classes.card} onClick={(e) => this.handleSelectCard(e, c._id)}>
+                                    <div id={`card-div-${c.CardName}`} className={classes.card} onClick={(e) => this.handleSelectCard(e, c._id, c.CardName)}>
                                         <Badge
                                             classes={{ badge: classes.doneIcone }}
                                             anchorOrigin={{

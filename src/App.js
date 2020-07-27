@@ -3,6 +3,14 @@ import './App.css';
 import Setting from './containers/Setting';
 
 import { BrowserRouter } from "react-router-dom";
+import { positions, Provider } from "react-alert";
+import AlertTemplate from "react-alert-template-basic";
+
+const options = {
+  timeout: 2000,
+  position: positions.BOTTOM_CENTER
+};
+
 export default class App extends Component {
   constructor(props) {
     super(props);
@@ -10,7 +18,9 @@ export default class App extends Component {
   render() {
     return (
       <BrowserRouter>
-        <Setting />
+        <Provider template={AlertTemplate} {...options}>
+          <Setting />
+        </Provider>
       </BrowserRouter>
     );
   }
