@@ -140,7 +140,7 @@ class MainInfo extends Component {
         return (
             <div className={classes.root}>
                 <List subheader={<ListSubheader>我的信用卡 (卡伯會依此進行優惠推薦)</ListSubheader>} className={classes.root}>
-                    <ListItem>
+                    <ListItem style={{ color: "#000" }} component={Link} to="/card/select">
                         <ListItemIcon>
                             <Badge
                                 anchorOrigin={{

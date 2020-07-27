@@ -180,7 +180,7 @@ class SelectOneCard extends Component {
 
     render() {
         const { classes } = this.props;
-        const list = this.props.bank_list.map((i, index) => {
+        const list = this.props.bank_list.filter(b => b.BankCards.length !== 0 && b.BankName !== "電子票證").map((i, index) => {
             const cardCarouselStyle = i._id === this.state.showBankdCarouselIndex ? { height: "40vw" } : { height: "0" };
 
             const carouselCards = this.props.card_list.filter(c => c.BankID === i._id);
