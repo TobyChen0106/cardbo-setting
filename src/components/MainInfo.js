@@ -60,23 +60,26 @@ class MainInfo extends Component {
         this.state = {
             tripleFlag: false,
             onecardFlag: false,
-            
+            onepayFlag: false,
+
         }
     }
     componentWillMount = () => {
         const params = new URLSearchParams(this.props.location.search);
         const type = params.get('type');
-        if(type === "onecard"){
-            this.setState({onecardFlag: true})
+        if (type === "onecard") {
+            this.setState({ onecardFlag: true })
+        } else if (type === "onepay") {
+            this.setState({ onepayFlag: true })
         }
     }
     componentDidMount = () => {
         window.scrollTo(0, 0)
-        window.addEventListener("beforeunload", this.props.handleCloseTab);
+        // window.addEventListener("beforeunload", this.props.handleCloseTab);
 
     }
     componentWillUnmount() {
-        window.removeEventListener('beforeunload', this.props.handleCloseTab);
+        // window.removeEventListener('beforeunload', this.props.handleCloseTab);
     }
 
     handleSetTriple = (e) => {
@@ -92,8 +95,13 @@ class MainInfo extends Component {
         if (this.state.tripleFlag) {
             return <Redirect to='/triple' />;
         }
+
         if (this.state.onecardFlag) {
             return <Redirect to='/onecard' />;
+        }
+
+        if (this.state.onepayFlag) {
+            return <Redirect to='/onepay' />;
         }
 
         return (
@@ -107,8 +115,8 @@ class MainInfo extends Component {
                 </div>
                 <List subheader={<ListSubheader>支付工具</ListSubheader>} className={classes.root}>
                     <Divider />
-                    <ListItem>
-                        <ListItemIcon>
+                    <ListItem style={{ color: "#000" }} component={Link} to="/card">
+                        <ListItemIcon >
                             <Badge
                                 anchorOrigin={{
                                     vertical: 'bottom',
@@ -129,7 +137,7 @@ class MainInfo extends Component {
                             </IconButton>
                         </ListItemSecondaryAction>
                     </ListItem>
-                    <ListItem>
+                    <ListItem style={{ color: "#000" }} component={Link} to="/pay">
                         <ListItemIcon>
                             <Badge
                                 anchorOrigin={{
@@ -150,7 +158,7 @@ class MainInfo extends Component {
                             </IconButton>
                         </ListItemSecondaryAction>
                     </ListItem>
-                    <ListItem>
+                    <ListItem style={{ color: "#000" }} onClick={this.handleSetTriple}>
                         <ListItemIcon>
                             <Badge
                                 classes={{ badge: classes.customBadge }}
@@ -166,14 +174,14 @@ class MainInfo extends Component {
                         <ListItemText id={`setting-pay`} primary={`三倍券綁定`}
                             secondary={!this.props.tripleType ? `未設定` : `${this.props.tripleType}`} />
                         <ListItemSecondaryAction>
-                            <IconButton edge="end" aria-label="comments" onClick={this.handleSetTriple}>
+                            <IconButton edge="end" aria-label="comments" onClick={this.handleSetTriple} >
                                 <KeyboardArrowRightIcon />
                             </IconButton>
                         </ListItemSecondaryAction>
                     </ListItem>
                 </List>
                 <List subheader={<ListSubheader>個人資訊</ListSubheader>} className={classes.root}>
-                    <ListItem>
+                    <ListItem style={{ color: "#000" }} component={Link} to="/info?type=phone">
                         <ListItemIcon>
                             <Badge
                                 classes={{ badge: classes.customBadge }}
@@ -189,12 +197,12 @@ class MainInfo extends Component {
                         <ListItemText primary={`手機`}
                             secondary={this.props.userPhone ? this.props.userPhone : `未設定`} />
                         <ListItemSecondaryAction>
-                            <IconButton edge="end" aria-label="comments" component={Link} to="/info?type=phone" >
+                            <IconButton edge="end" aria-label="comments"  component={Link} to="/info?type=phone">
                                 <KeyboardArrowRightIcon />
                             </IconButton>
                         </ListItemSecondaryAction>
                     </ListItem>
-                    <ListItem>
+                    <ListItem style={{ color: "#000" }} component={Link} to="/info?type=email">
                         <ListItemIcon>
                             <Badge
                                 classes={{ badge: classes.customBadge }}
@@ -216,7 +224,7 @@ class MainInfo extends Component {
                             </IconButton>
                         </ListItemSecondaryAction>
                     </ListItem>
-                    <ListItem>
+                    <ListItem style={{ color: "#000" }} component={Link} to="/info?type=city">
                         <ListItemIcon>
                             <Badge
                                 classes={{ badge: classes.customBadge }}
@@ -239,7 +247,7 @@ class MainInfo extends Component {
                         </ListItemSecondaryAction>
                     </ListItem>
                 </List>
-                <List subheader={<ListSubheader>主題</ListSubheader>} className={classes.root}>
+                {/* <List subheader={<ListSubheader>主題</ListSubheader>} className={classes.root}>
                     <ListItem>
                         <ListItemIcon>
                             <ColorLensIcon />
@@ -253,7 +261,7 @@ class MainInfo extends Component {
                             />
                         </ListItemSecondaryAction>
                     </ListItem>
-                </List>
+                </List> */}
             </div>
         )
     }

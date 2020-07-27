@@ -13,6 +13,7 @@ import MainInfo from '../components/MainInfo';
 import SelectCard from '../components/SelectCard';
 import SelectOneCard from '../components/SelectOneCard';
 import SelectPay from '../components/SelectPay';
+import SelectOnePay from '../components/SelectOnePay';
 import SelectTriple from '../components/SelectTriple';
 import SetSimpleInfo from '../components/SetSimpleInfo';
 import UserCards from '../components/UserCards';
@@ -178,7 +179,7 @@ class Setting extends Component {
         })
     }
     componentDidMount() {
-        window.addEventListener("beforeunload", this.handleCloseTab);
+        // window.addEventListener("beforeunload", this.handleCloseTab);
     }
 
     componentWillUnmount() {
@@ -364,6 +365,52 @@ class Setting extends Component {
         });
     }
 
+    updateUserOnePay = (payID) => {
+        var new_user = this.state.user;
+        if (this.state.user.ownPays.find(c => c === payID)) {
+        } else {
+            new_user.ownPays = [payID, ...this.state.user.ownPays]
+        }
+
+        new_user.tripleType = "行動支付";
+        new_user.tripleCardorPayID = payID;
+        fetch('/api/updateUser', {
+            method: 'POST',
+            body: JSON.stringify(new_user),
+            headers: new Headers({
+                'Content-Type': 'application/json'
+            })
+        }).catch(function (error) {
+            console.log("[Error] " + error);
+        }).then(
+            res => {
+                if (res.ok) {
+                    console.log("ok")
+                    return res.json()
+                }
+                else {
+                    this.createNotification("error", "無法載入資料", "請確認網路連線狀況");
+                    return null;
+                }
+            }
+        ).then((data) => {
+            this.setState(
+                { user: data }
+            );
+        }).then(() => {
+            liff.sendMessages([
+                {
+                    type: 'text',
+                    text: `已綁定行動支付: ${this.state.pay_list.find(c => c._id === payID).PayName}`
+                }
+            ]).catch((err) => {
+                alert(err);
+            }).then(() => {
+                liff.closeWindow();
+            });
+        });
+    }
+    
     handleSetTriple = () => {
         liff.sendMessages([
             {
@@ -462,6 +509,17 @@ class Setting extends Component {
                                     pay_list={this.state.pay_list}
                                 />
                             )} />
+
+                        <Route exact={true} path="/onepay"
+                            render={(props) => (
+                                <SelectOnePay
+                                    {...props}
+                                    updateUserOnePay={this.updateUserOnePay}
+                                    ownPays={this.state.user.ownPays}
+                                    pay_list={this.state.pay_list}
+                                />
+                            )} />
+
                         <Route exact={true} path="/triple" >
                             <SelectTriple
                                 card_list={this.state.card_list}

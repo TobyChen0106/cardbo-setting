@@ -12,22 +12,28 @@ router.post('/getUserProfile', (req, res) => {
     if (userdata.lineID === "") {
         res.json("[ERROR] lineID empty!");
     } else {
-        User.findOneAndUpdate({ lineID: userdata.lineID },
-            {
-                lineID: userdata.lineID,
-                displayName: userdata.displayName,
-                userImage: userdata.userImage,
-            }, {
-            new: true,
-            upsert: true
-        }, (err, userResponse) => {
+        User.findOne({ lineID: userdata.lineID }, (err, userResponse) => {
             if (err) {
                 console.log(err);
                 res.json("Server User find ID Error." + String(err));
             }
             if (!userResponse) {
-                console.log("error empty user findOneAndUpdate!")
-                res.json(userResponse)
+                const newUser = new User({
+                    lineID: userdata.lineID,
+                    displayName: userdata.displayName,
+                    userImage: userdata.userImage,
+                })
+                newUser.save().then(
+                    function (updatedDoc, err) {
+                        // if update is successful, this function will execute
+                        if (err) {
+                            console.log(err);
+                            res.json(null);
+                        } else {
+                            res.json(updatedDoc);
+                        }
+                    }
+                );
             }
             else {
                 res.json(userResponse)
@@ -90,7 +96,7 @@ router.post('/updateUser', (req, res) => {
         res.json("[ERROR] lineID empty!");
     } else {
         User.findOneAndUpdate({ lineID: userdata.lineID }, userdata,
-            { new: true, upsert: true , useFindAndModify: false},
+            { new: true, upsert: true, useFindAndModify: false },
             (err, userResponse) => {
                 if (err) {
                     console.log(err);
