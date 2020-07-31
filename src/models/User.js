@@ -13,7 +13,7 @@ const UserSchema = new Schema({
         default: []
     },
     ownCards: {
-        type: [mongoose.ObjectId],
+        type: [String],
         default: []
     },
     ownPays: {

@@ -2,11 +2,12 @@ const mongoose = require('mongoose')
 const Schema = mongoose.Schema
 
 const CardSchema = new Schema({
-    CardName: String,
+    _id: String, 
+    CardName:String,
     CardImage: String,
     ServiceAgent: String,
     CardGrade: String,
-    BankID: mongoose.ObjectId,
+    BankID: String,
     Offers: [mongoose.ObjectId],
 });
 

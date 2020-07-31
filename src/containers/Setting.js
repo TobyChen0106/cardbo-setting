@@ -81,7 +81,6 @@ class Setting extends Component {
                 this.createNotification("error", "無法載入資料", "請確認網路連線狀況");
             } else {
                 if (profile) {
-
                     fetch('/api/getUserProfile', {
                         method: 'POST',
                         body: JSON.stringify({
@@ -106,7 +105,6 @@ class Setting extends Component {
                             }
                         }
                     ).then((data) => {
-                        console.log(data)
                         this.setState(
                             { user: data, loadingUser: false }
                         );

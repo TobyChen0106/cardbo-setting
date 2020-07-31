@@ -227,7 +227,6 @@ class SelectCard extends Component {
                                     </div>
                                 )
                             })}
-
                         </Carousel>
                     </div>
                     <Divider />
